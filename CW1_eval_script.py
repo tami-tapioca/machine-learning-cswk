@@ -1,3 +1,4 @@
+# NOTE: Needs to be adapted to fit the previous script at a later date (the X_tst file format, etc)
 import pandas as pd
 import numpy as np
 import logging
