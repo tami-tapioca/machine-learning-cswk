@@ -1,4 +1,3 @@
-# NOTE: Needs to be adapted to fit the previous script at a later date (the X_tst file format, etc)
 import pandas as pd
 import numpy as np
 import logging
@@ -9,8 +8,6 @@ from sklearn.pipeline import Pipeline
 from sklearn.metrics import make_scorer, r2_score
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
-# Set seed
-np.random.seed(123) 
 
 # Import training data
 trn = pd.read_csv('CW1_train.csv')
@@ -34,7 +31,6 @@ logging.info("Outliers removed")
 # Identify categorical columns
 categorical_cols = ['cut', 'color', 'clarity']
 
-# Make copy to avoid changing original data
 trn_copy = trn.copy()
 
 # Label encode categorical variables
@@ -44,26 +40,21 @@ for col in categorical_cols:
     
 logging.info("Categorial variable encoding finished")
 
-# Training the model
-# X_trn, y_trn = trn_copy[['depth', 'table', 'a1', 'a4', 'b1', 'b3']].values, trn_copy['outcome'].values
-# X_tst = X_tst[['depth', 'table', 'a1', 'a4', 'b1', 'b3']].values
-
 X, y = trn_copy[['depth', 'table', 'a1', 'a4', 'b1', 'b3']].values, trn_copy['outcome'].values
-X_trn, X_tst, y_trn, y_tst = train_test_split(X, y, test_size=0.25, random_state=0)
+X_trn, X_tst, y_trn, y_tst = train_test_split(X, y, test_size=0.3, random_state=0)
 
 pipeline = Pipeline(steps=[('scaler', StandardScaler()),
                            ('regressor', GradientBoostingRegressor())])
 model = pipeline.fit(X_trn, (y_trn))
 logging.info("Inital training finished")
 
-# Use the best found estimator, and find the best hyperparameter combination for R2 score
 alg = GradientBoostingRegressor()
-
 
 logging.info("Training with hyperparameters...")
 hyperparameters = {
- 'learning_rate': [0.1, 0.5, 1.0],
- 'n_estimators' : [50, 100, 150]
+ 'learning_rate': [0.20],
+ 'n_estimators' : [40],
+ 'max_depth' : [3]
  }
 
 score = make_scorer(r2_score)
@@ -80,7 +71,7 @@ yhat_lm = model.predict(X_tst)
 # Format submission:
 # This is a single-column CSV with nothing but your predictions
 out = pd.DataFrame({'yhat': yhat_lm})
-out.to_csv('CW1_submission_K23171764.csv', index=False) # Please use your k-number here
+out.to_csv('CW1_submission_K23171764.csv', index=False) 
 
 ################################################################################
 
